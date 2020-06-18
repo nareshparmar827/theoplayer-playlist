@@ -1,1 +1,1 @@
-# theoplayer-playlist
+# Theoplayer Playlist
