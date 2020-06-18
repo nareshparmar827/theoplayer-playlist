@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>THEOplayer 2.X: Getting Started</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <!-- Chromecast SDK -->
+    <script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    
+    <!-- THEOplayer library and css -->
+    <script type="text/javascript" src="https://cdn.myth.theoplayer.com/b93de1b8-b518-4492-9eeb-e21d294ce96f/THEOplayer.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.myth.theoplayer.com/b93de1b8-b518-4492-9eeb-e21d294ce96f/ui.css" />
+    <style> .theo-primary-color, .vjs-selected {color: #ec008b !important; }
+      .theo-primary-background {color: #000000 !important; background-color: #ec008b !important; } </style>
+  </head>
+
+  <body>
+    
+    <style>
+    .theoplayer-playlist-holder {background: #1b1b1b; display: inline-block; position: relative; bottom: 0; height: 100%; vertical-align: top; }
+.theoplayer-playlist-menu {box-sizing: border-box; font-family: sans-serif; width: 360px; overflow-y: auto; color: #c0c0c0; display: block; position: relative; background: linear-gradient(to bottom, #000 0, #212121 19%, #212121 100%); box-shadow: 0 1px 1px #1a1a1a inset, 0px 1px 1px #454545; border: 1px solid #1a1a18; scrollbar-base-color: #fff; scrollbar-highlight-color: #fff; scrollbar-arrow-color: #fff; scrollbar-track-color: #161616; scrollbar-shadow-color: #fff; }
+.theoplayer-playlist-holder, .theoplayer-playlist-menu {width: 100%; }
+.theoplayer-playlist-menu::-webkit-scrollbar-thumb:hover {box-shadow: 0em 0em 0.5em #ffffff; }
+.theoplayer-playlist-button-holder .fa-step-forward {float: right; }
+.theoplayer-playlist-button-holder .fa-step-forward:hover {text-shadow: 0em 0em 1em white; }
+.theoplayer-playlist-button-holder .fa-step-backward {float: left; }
+.theoplayer-playlist-button-holder .fa-step-backward:hover {text-shadow: 0em 0em 1em white; }
+.theoplayer-playlist-button-holder .fa, .theoplayer-playlist-button-holder .fa {@extend %icon; cursor: pointer; margin: 10px; color: #fff; }
+.theoplayer-playlist-menu ul {padding: 0; margin: 0; list-style: none; }
+.theoplayer-playlist-menu ul li {padding: 5px; border-bottom: 1px solid #000; cursor: pointer; color: rgba(255, 255, 255, 0.5); }
+.theoplayer-playlist-menu ul li.active {background-color: #4f4f4f; color: #FFF; }
+.theoplayer-playlist-menu ul li:hover:not(.active) {background: #353535; }
+.theoplayer-playlist-menu .thumbnail, .theoplayer-playlist-menu .title {display: inline-block; vertical-align: middle; } 
+.theoplayer-playlist-menu .number {padding-right: 10px; }
+.theoplayer-playlist-menu .thumbnail img {width: 64px; }
+.theoplayer-playlist-menu .title {padding-left: 10px; }
+</style>
+
+    <div class="container playlist">
+        <div class="video-js vjs-fluid theoplayer theoplayer-skin theo-seekbar-above-controls"><!--42--></div>
+        <div class="theoplayer-playlist-holder">
+            <div class="theoplayer-playlist-menu"> </div>
+            <div class="theoplayer-playlist-button-holder"><span class="fa fa-step-backward" onclick="goPrevious()"> </span> <span class="fa fa-step-forward" onclick="goNext()"> </span></div>
+        </div>
+    </div>
+
+    <script>
+      // information on setting up THEOplayer and the player object can be found at https://docs.portal.theoplayer.com/docs/docs/getting-started/web/web
+
+    var element = document.querySelector('.theoplayer');
+    var player = new THEOplayer.Player(element, {  
+        fluid: true,
+        libraryLocation: 'https://cdn.myth.theoplayer.com/b93de1b8-b518-4492-9eeb-e21d294ce96f'
+    });
+
+    player.autoplay = true;
+
+    // configure video playlist items
+    var playlist = [
+        {
+            source : {
+                sources: {
+                    src : 'https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8'
+                }
+            },
+            title: 'Big Buck Bunny',
+            description: 'Big Buck Bunny',
+            poster: 'https://cdn.theoplayer.com/video/big_buck_bunny/poster.jpg'
+        },
+        {
+            source : {
+                sources: {
+                    src : 'https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/index.m3u8'
+                }
+            },
+            title: 'Star Wars Reel',
+            description: 'Star Wars Reel',
+            poster: 'https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/poster.jpg'
+        },
+        {
+            source : {
+                sources: {
+                    src : 'https://cdn.theoplayer.com/video/tears_of_steel/index.m3u8'
+                }
+            },
+            title: 'Tears of Steel',
+            description: 'Tears of Steel',
+            poster: 'https://cdn.theoplayer.com/video/tears_of_steel/poster.jpg'
+        }
+    ];
+
+    // create playlist UI
+    var listElement = document.createElement('ul');
+    var li;
+    for (i = 0; i < playlist.length; i++) {
+        li = createPlaylistElement(i);
+        listElement.appendChild(li);
+    }
+    var playlistMenu = document.querySelector('.theoplayer-playlist-menu');
+    playlistMenu.innerHTML = "";
+    playlistMenu.appendChild(listElement);
+
+    function createPlaylistElement(trackNumber) {
+        var track = playlist[trackNumber];
+        var trackLiElement = document.createElement('li');
+        var trackNumberElement = document.createElement('span');
+        trackNumberElement.className = 'number';
+        trackNumberElement.innerText = trackNumber + 1;
+        trackLiElement.appendChild(trackNumberElement);
+        var trackThumbnail = document.createElement('span');
+        trackThumbnail.className = 'thumbnail';
+        var trackThumbnailImage = document.createElement('img');
+        trackThumbnailImage.setAttribute('src', track.poster);
+        trackThumbnail.appendChild(trackThumbnailImage);
+        trackLiElement.appendChild(trackThumbnail);
+        var trackTitleElement = document.createElement('span');
+        trackTitleElement.className = 'title';
+        trackTitleElement.innerText = track.title;
+        trackLiElement.appendChild(trackTitleElement);
+        trackLiElement.onclick = function () {
+            player.source = track.source;
+            active = trackNumber;
+        };
+        trackLiElement.setAttribute('id', 'theoplayer-playlist-menu-' + trackNumber);
+        return trackLiElement;
+    }
+
+    // set initial item of the playlist
+    player.source = playlist[0].source;
+
+    var active = 0; // Which track from the playlist is now playing
+    player.addEventListener('ended', onEnded);
+    player.addEventListener('playing',changeActiveTrack);
+
+    // continue with the next item of the playlist when the current video has ended
+    function onEnded () {
+        goNext();
+    }
+
+    // update selected item in the playlist
+    function changeActiveTrack () {
+        var activeElement = document.querySelector('.active');
+        if (activeElement) {
+            activeElement.classList.remove('active');
+        }
+        document.querySelector('#theoplayer-playlist-menu-' + active).className = 'active';
+    }
+
+    // go to the previous item in the playlist
+    function goPrevious () {
+        if (active > 0) {
+            active -= 1;
+            player.source = playlist[active].source;
+        }
+    }
+
+    // go to the next item in the playlist
+    function goNext () {
+        if (active + 1 < playlist.length) {
+            active += 1;
+            player.source = playlist[active].source;
+        }
+    }
+
+    // caching logic
+    function configureCachingOfPlaylist() {
+        var cached = []; // var to store which playlist item has already been cached
+        player.addEventListener('timeupdate', function() {
+           var videoPercentage = Math.round(player.currentTime/player.duration*100);
+           // check if cache should happen
+           if ((active < (playlist.length - 1)) && !cached[active+1] && videoPercentage >= 75) {
+                cached[active+1] = true;
+                var task = THEOplayer.cache.createTask(playlist[active+1].source, {amount: '25%'});
+                task.start();
+           }
+        });
+    }
+    configureCachingOfPlaylist();
+    </script>
+  </body>
+</html>
